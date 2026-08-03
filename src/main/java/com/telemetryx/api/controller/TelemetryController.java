@@ -3,6 +3,7 @@ package com.telemetryx.api.controller;
 import com.telemetryx.api.dto.DeviceStatsResponse;
 import com.telemetryx.api.dto.StatsResponse;
 import com.telemetryx.api.dto.TelemetryIngestRequest;
+import com.telemetryx.api.dto.TelemetryResponse;
 import com.telemetryx.api.entity.TelemetryData;
 import com.telemetryx.api.repository.TelemetryDataRepository;
 import com.telemetryx.api.service.TelemetryService;
@@ -31,7 +32,7 @@ public class TelemetryController
     }
 
     @GetMapping
-    public ResponseEntity<Page<TelemetryData>> getTelemetry(
+    public ResponseEntity<Page<TelemetryResponse>> getTelemetry(
             @RequestParam(required = false) Long deviceId ,
             @RequestParam(required = false) Boolean hazardous ,
             @RequestParam(required = false) Double minSpeed, Pageable pageable)

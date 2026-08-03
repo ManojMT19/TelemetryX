@@ -19,4 +19,5 @@ public class TelemetrySpecification
     {
         return (root, query, criteriaBuilder) -> criteriaBuilder.greaterThan(root.get("speed"),speed);
     }
+
 }

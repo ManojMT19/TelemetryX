@@ -3,6 +3,7 @@ package com.telemetryx.api.service;
 import com.telemetryx.api.dto.DeviceStatsResponse;
 import com.telemetryx.api.dto.StatsResponse;
 import com.telemetryx.api.dto.TelemetryIngestRequest;
+import com.telemetryx.api.dto.TelemetryResponse;
 import com.telemetryx.api.entity.Device;
 import com.telemetryx.api.entity.TelemetryData;
 import com.telemetryx.api.exception.ResourceNotFoundException;
@@ -49,11 +50,7 @@ public class TelemetryService
         telemetryDataRepository.save(data);
     }
 
-    public Page<TelemetryData> getTelemetry(
-            Long deviceId,
-            Boolean hazardous,
-            Double minSpeed,
-            Pageable pageable) // Specification
+    public Page<TelemetryResponse> getTelemetry(Long deviceId, Boolean hazardous, Double minSpeed, Pageable pageable) // Specification
     {
 
         Specification<TelemetryData> spec = null;
@@ -79,10 +76,17 @@ public class TelemetryService
                 spec = spec.and(TelemetrySpecification.minSpeed(minSpeed));
         }
 
+        Page<TelemetryData> page;
         if (spec == null)
-            return telemetryDataRepository.findAll(pageable);
+        {
+            page = telemetryDataRepository.findAll(pageable);
+        }
+        else
+        {
+            page = telemetryDataRepository.findAll(spec, pageable);
+        }
 
-        return telemetryDataRepository.findAll(spec, pageable);
+        return page.map(this::mapToResponse);
     }
 
     public StatsResponse getFleetStats()
@@ -149,6 +153,21 @@ public class TelemetryService
             responseList.add(dd);
         }
         return responseList;
+    }
+
+    private TelemetryResponse mapToResponse(TelemetryData data)
+    {
+        TelemetryResponse dto = new TelemetryResponse();
+
+        dto.setTelemetryId(data.getId());
+        dto.setDeviceId(data.getDevice().getId());
+        dto.setSerialNumber(data.getDevice().getSerialNumber());
+        dto.setSpeed(data.getSpeed());
+        dto.setTemperature(data.getTemperature());
+        dto.setHazardous(data.isHazardous());
+        dto.setTimestamp(data.getTimestamp());
+
+        return dto;
     }
 
 }
