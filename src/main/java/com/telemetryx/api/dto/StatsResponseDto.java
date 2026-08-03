@@ -1,8 +1,6 @@
 package com.telemetryx.api.dto;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-
-public class StatsResponse
+public class StatsResponseDto
 {
     private long totalDevices;
     private long totalTelemetryLogs;

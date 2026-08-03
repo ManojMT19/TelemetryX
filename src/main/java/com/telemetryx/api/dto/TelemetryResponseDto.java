@@ -2,7 +2,7 @@ package com.telemetryx.api.dto;
 
 import java.time.LocalDateTime;
 
-public class TelemetryResponse
+public class TelemetryResponseDto
 {
     private Long telemetryId;
     private Long deviceId;

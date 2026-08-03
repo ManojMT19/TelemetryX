@@ -1,6 +1,6 @@
 package com.telemetryx.api.dto;
 
-public class DeviceStatsResponse
+public class DeviceStatsResponseDto
 {
     private Long deviceId;
     private String deviceName;

@@ -1,9 +1,9 @@
 package com.telemetryx.api.service;
 
-import com.telemetryx.api.dto.DeviceStatsResponse;
-import com.telemetryx.api.dto.StatsResponse;
-import com.telemetryx.api.dto.TelemetryIngestRequest;
-import com.telemetryx.api.dto.TelemetryResponse;
+import com.telemetryx.api.dto.DeviceStatsResponseDto;
+import com.telemetryx.api.dto.StatsResponseDto;
+import com.telemetryx.api.dto.TelemetryIngestRequestDto;
+import com.telemetryx.api.dto.TelemetryResponseDto;
 import com.telemetryx.api.entity.Device;
 import com.telemetryx.api.entity.TelemetryData;
 import com.telemetryx.api.exception.ResourceNotFoundException;
@@ -12,7 +12,6 @@ import com.telemetryx.api.repository.TelemetryDataRepository;
 import com.telemetryx.api.specification.TelemetrySpecification;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-import com.telemetryx.api.exception.ResourceNotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -31,7 +30,7 @@ public class TelemetryService
         this.telemetryDataRepository = telemetryDataRepository;
     }
 
-    public void processTelemetry(TelemetryIngestRequest request)
+    public void processTelemetry(TelemetryIngestRequestDto request)
     {
         // 1. Validate the device exists
         Device device = deviceRepository.findById(request.getDeviceId()).orElseThrow(() -> new ResourceNotFoundException("Device not found"));
@@ -50,7 +49,7 @@ public class TelemetryService
         telemetryDataRepository.save(data);
     }
 
-    public Page<TelemetryResponse> getTelemetry(Long deviceId, Boolean hazardous, Double minSpeed, Pageable pageable) // Specification
+    public Page<TelemetryResponseDto> getTelemetry(Long deviceId, Boolean hazardous, Double minSpeed, Pageable pageable) // Specification
     {
 
         Specification<TelemetryData> spec = null;
@@ -89,7 +88,7 @@ public class TelemetryService
         return page.map(this::mapToResponse);
     }
 
-    public StatsResponse getFleetStats()
+    public StatsResponseDto getFleetStats()
     {
         // 1. Count devices using deviceRepository.count()
         // 2. Count telemetry logs using telemetryDataRepository.count()
@@ -114,7 +113,7 @@ public class TelemetryService
         avgSpeed = Math.round(avgSpeed * 100.0) / 100.0;
         avgTemp = Math.round(avgTemp * 100.0) / 100.0;
 
-        StatsResponse response = new StatsResponse();
+        StatsResponseDto response = new StatsResponseDto();
         
         response.setAverageSpeed(avgSpeed);
         response.setAverageTemperature(avgTemp);
@@ -124,11 +123,11 @@ public class TelemetryService
         return response;
     }
 
-    public List<DeviceStatsResponse> getStatsPerDevice()
+    public List<DeviceStatsResponseDto> getStatsPerDevice()
     {
         List<Device> devices = deviceRepository.findAllByOrderByIdAsc();
 
-        List<DeviceStatsResponse> responseList = new ArrayList<>();
+        List<DeviceStatsResponseDto> responseList = new ArrayList<>();
 
         for (Device dev : devices)
         {
@@ -141,7 +140,7 @@ public class TelemetryService
             avgSpeed = Math.round(avgSpeed * 100.0)/100.0;
             avgtemp = Math.round(avgtemp * 100.0)/100.0;
 
-            DeviceStatsResponse dd = new DeviceStatsResponse();
+            DeviceStatsResponseDto dd = new DeviceStatsResponseDto();
 
             dd.setDeviceId(dev.getId());
             dd.setDeviceName(dev.getDeviceType());
@@ -155,9 +154,9 @@ public class TelemetryService
         return responseList;
     }
 
-    private TelemetryResponse mapToResponse(TelemetryData data)
+    private TelemetryResponseDto mapToResponse(TelemetryData data)
     {
-        TelemetryResponse dto = new TelemetryResponse();
+        TelemetryResponseDto dto = new TelemetryResponseDto();
 
         dto.setTelemetryId(data.getId());
         dto.setDeviceId(data.getDevice().getId());

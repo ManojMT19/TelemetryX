@@ -1,9 +1,19 @@
 package com.telemetryx.api.dto;
 
-public class TelemetryIngestRequest
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+
+public class TelemetryIngestRequestDto
 {
+    @NotNull(message = "Device ID is required")
     private Long deviceId;
+
+    @NotNull(message = "Temperature is required")
+    @Positive(message = "Temperature must be greater than 0")
     private Double temperature;
+
+    @NotNull(message = "Speed is required")
+    @Positive(message = "Speed must be greater than 0")
     private Double speed;
 
     public Long getDeviceId()
