@@ -4,6 +4,8 @@ import com.telemetryx.api.dto.LoginRequestDto;
 import com.telemetryx.api.dto.UserRegisterRequestDto;
 import com.telemetryx.api.entity.User;
 import com.telemetryx.api.repository.UserRepository;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -12,11 +14,15 @@ public class UserService
 {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final AuthenticationManager authenticationManager;
+    private final JWTService jwtService;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder)
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, JWTService jwtService)
     {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.authenticationManager = authenticationManager;
+        this.jwtService = jwtService;
     }
 
     public void register(UserRegisterRequestDto request)
@@ -34,16 +40,8 @@ public class UserService
 
     public String login(LoginRequestDto request)
     {
-        System.out.println("Inside Login Method");
+        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getUsername() , request.getPassword()));
 
-        User user = userRepository.findByUsername(request.getUsername()).orElseThrow(()-> new RuntimeException("User not found"));
-
-        if (!passwordEncoder.matches(request.getPassword() , user.getPassword()))
-        {
-            throw new RuntimeException(("Invalid Password"));
-        }
-
-        return "Login Successfully";
-
+        return jwtService.generateToken(request.getUsername());
     }
 }

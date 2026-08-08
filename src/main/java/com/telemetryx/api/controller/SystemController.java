@@ -7,9 +7,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class SystemController
 {
-    @GetMapping("/api/v1/system/heartbeat")
+    @GetMapping("/system")
     public String HeartBeat()
     {
+        System.out.println("Welcome to my Project  !!!");
         return "TelemetryX API v1 is operational";
     }
 }
