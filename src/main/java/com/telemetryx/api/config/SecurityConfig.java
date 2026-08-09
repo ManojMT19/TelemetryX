@@ -1,6 +1,7 @@
 package com.telemetryx.api.config;
 
 import com.telemetryx.api.security.CustomUserDetailsService;
+import com.telemetryx.api.security.JWT_Filter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -10,6 +11,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 /*
 
@@ -27,10 +29,12 @@ UserRepository	                Retrieves user data from the database.
 public class SecurityConfig
 {
     private final CustomUserDetailsService customUserDetailsService;
+    private final JWT_Filter jwtFilter;
 
     // 1. Inject our new Security Guard
-    public SecurityConfig(CustomUserDetailsService customUserDetailsService) {
+    public SecurityConfig(CustomUserDetailsService customUserDetailsService, JWT_Filter jwtFilter) {
         this.customUserDetailsService = customUserDetailsService;
+        this.jwtFilter = jwtFilter;
     }
 
     @Bean
@@ -65,6 +69,7 @@ public class SecurityConfig
                         .requestMatchers("/api/v1/auth/register", "/api/v1/auth/login").permitAll()
                         .anyRequest().authenticated()
                 );
+        http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

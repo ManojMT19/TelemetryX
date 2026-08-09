@@ -25,5 +25,22 @@ public class JWTService
 
     }
 
+    public static String extractUsername(String token)
+    {
+        return Jwts.parser()
+                .verifyWith(key)
+                .build()
+                .parseSignedClaims(token)
+                .getPayload()
+                .getSubject();
+    }
+
+    public boolean isTokenValid(String token , String  username)
+    {
+        String extractedUsername = extractUsername(token);
+
+        return extractedUsername.equals(username);
+    }
+
 
 }
