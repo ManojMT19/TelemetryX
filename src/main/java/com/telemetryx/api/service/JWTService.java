@@ -30,7 +30,7 @@ public class JWTService
         return Jwts.parser()
                 .verifyWith(key)
                 .build()
-                .parseSignedClaims(token)
+                .parseSignedClaims(token)c
                 .getPayload()
                 .getSubject();
     }

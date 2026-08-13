@@ -2,6 +2,7 @@ package com.telemetryx.api.config;
 
 import com.telemetryx.api.security.CustomUserDetailsService;
 import com.telemetryx.api.security.JWT_Filter;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -70,8 +71,14 @@ public class SecurityConfig
                         .permitAll()
                         .anyRequest()
                         .authenticated()
+                )
+                .exceptionHandling(exception -> exception
+                        .authenticationEntryPoint(
+                                (request, response, authException) ->
+                                        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED)
+                        )
                 );
-        http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(jwtFilter,UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
