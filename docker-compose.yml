@@ -1,0 +1,36 @@
+services:
+
+  db:
+    image: postgres:15-alpine
+    container_name: telemetryx-db
+
+    environment:
+      POSTGRES_DB: telemetryx_db
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+
+    ports:
+      - "5432:5432"
+
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+
+  app:
+    build: .
+    container_name: telemetryx-api
+
+    ports:
+      - "8080:8080"
+
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/telemetryx_db
+      SPRING_DATASOURCE_USERNAME: ${DB_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+
+    depends_on:
+      - db
+
+
+volumes:
+  postgres_data:
